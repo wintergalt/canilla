@@ -43,7 +43,6 @@ class MainWindow(QMainWindow):
         tv_headers.selectionModel().currentChanged.connect(self.header_selection_changed)
         tv_headers.setSelectionBehavior(QAbstractItemView.SelectRows)
         tv_headers.setIndentation(0)
-        tv_headers.installEventFilter(ThreadKbFilter())
         
     def show_next_article(self):
         logging.debug('show_next_article')

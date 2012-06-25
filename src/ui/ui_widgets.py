@@ -1,4 +1,5 @@
 from PyQt4.QtCore import * #@UnusedWildImport
+from PyQt4.QtGui import * #@UnusedWildImport
 import logging
 
 logging.basicConfig(level=logging.DEBUG,
@@ -36,20 +37,6 @@ class ThreadListModel(QAbstractListModel):
         at the end of self.listdata '''
         self.listdata.extend(rows)
         
-        
-class ThreadKbFilter(QObject):
     
-    def eventFilter(self, obj, evt):
-        logging.debug('inside event filter')
-        if evt.type() == QEvent.KeyPress:
-            if evt.key() == Qt.Key_Space:
-                logging.debug('obj:')
-                logging.debug(obj)
-                return True
-            else:
-                logging.debug('1')
-        else:
-            logging.debug('2')
-            # standard event processing
-            return QObject.eventFilter(obj, evt)
-    
+
+
