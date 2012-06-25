@@ -98,9 +98,23 @@ class MainWindow(QMainWindow):
         logging.debug('Inside group_selection_changed')
         self.populate_threads(current)
     
-    def header_selection_changed(self):
-        logging.debug('Inside header_selection_changed')
     
+    def populate_body(self, current):
+        tb_body = self.mainwindow.tb_body
+        tb_body.clear()
+        tv_headers = self.mainwindow.tv_headers
+        id = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).id
+        reply, num, tid, list = nntp_conn.body(id)
+        for line in list:
+            tb_body.append(line)
+            
+    
+    
+    def header_selection_changed(self, current, previous):
+        logging.debug('Inside header_selection_changed')
+        self.populate_body(current)
+        
+
     def load_groups(self):
         groups = session.query(Newsgroup).filter_by(subscribed=True)
         tv = self.mainwindow.tv_groups
@@ -166,9 +180,13 @@ def init_app():
 
 
 if __name__ == '__main__':
-    init_db()
-    init_app()
-    app = QApplication(sys.argv)
-    frame = MainWindow()
-    frame.show()
-    app.exec_()
+    try:
+        init_db()
+        init_app()
+        app = QApplication(sys.argv)
+        frame = MainWindow()
+        frame.show()
+        app.exec_()
+    finally:
+        if nntp_conn:
+            nntp_conn.quit()
