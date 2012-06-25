@@ -57,14 +57,12 @@ class MainWindow(QMainWindow):
     def populate_threads(self, current):
         tv_headers = self.mainwindow.tv_headers
         self.clear_headers_table()
-        logging.debug('lv headers cleared')
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         (reply, count, first, last, name) = nntp_conn.group(currentItem.newsgroup.name)
         
         (reply, subjects) = nntp_conn.xhdr('subject', str(int(last)-5) + '-' + last)
         
         for id, subject in subjects:
-            logging.debug('Inside for loop... processing id: %s' % id)
             d = {}
             try:
                 reply, num, tid, list = nntp_conn.head(id)
@@ -77,7 +75,6 @@ class MainWindow(QMainWindow):
                         d[header] = line[len(header) + 2:]
             
             items = []
-            logging.debug('Inside header loop')
             it = QStandardItem()
             it.id = id
             it.setData(d['Subject'], Qt.DisplayRole)
@@ -98,7 +95,6 @@ class MainWindow(QMainWindow):
     
     
     def group_selection_changed(self, current, previous):
-        logging.debug('Inside group_selection_changed')
         self.populate_threads(current)
     
     
@@ -114,7 +110,6 @@ class MainWindow(QMainWindow):
     
     
     def header_selection_changed(self, current, previous):
-        logging.debug('Inside header_selection_changed')
         self.populate_body(current)
         
 
@@ -124,7 +119,6 @@ class MainWindow(QMainWindow):
         
         for g in groups:
             items = []
-            logging.debug('Inside loop')
             it = QStandardItem()
             it.newsgroup = g
             it.setData(g.name, Qt.DisplayRole)
