@@ -14,45 +14,92 @@ nntp_conn = None
 
 
 class MainWindow(QMainWindow):
-
-    def ui_extra_setup(self):
-        splitter_2 = self.mainwindow.splitter_2
-        splitter_2.setSizes([30,200])    
-        
-        tv = self.mainwindow.tv_groups
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(['Newsgroups'])
-        tv.setModel(model)
-        tv.selectionModel().currentChanged.connect(self.group_selection_changed)
-        tv.setSelectionBehavior(QAbstractItemView.SelectRows)
-        tv.setIndentation(0)
-        
-        lv = self.mainwindow.lv_headers
-        listModel = ThreadListModel(datain=[])
-        lv.setModel(listModel)
     
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.mainwindow = Ui_MainWindow()
         self.mainwindow.setupUi(self)
+        self.header_list = ['Subject', 'From', 'Date']
         self.ui_extra_setup()
         self.load_groups()
         
         
+    def ui_extra_setup(self):
+        splitter_2 = self.mainwindow.splitter_2
+        splitter_2.setSizes([30,200])    
+        
+        tv_groups = self.mainwindow.tv_groups
+        groups_model = QStandardItemModel()
+        groups_model.setHorizontalHeaderLabels(['Newsgroups'])
+        tv_groups.setModel(groups_model)
+        tv_groups.selectionModel().currentChanged.connect(self.group_selection_changed)
+        tv_groups.setSelectionBehavior(QAbstractItemView.SelectRows)
+        tv_groups.setIndentation(0)
+        
+        tv_headers = self.mainwindow.tv_headers
+        headers_model = QStandardItemModel()
+        headers_model.setHorizontalHeaderLabels(self.header_list)
+        tv_headers.setModel(headers_model)
+        tv_headers.selectionModel().currentChanged.connect(self.header_selection_changed)
+        tv_headers.setSelectionBehavior(QAbstractItemView.SelectRows)
+        tv_headers.setIndentation(0)
+        
+        
+    def clear_headers_table(self):
+        tv_headers = self.mainwindow.tv_headers
+        tv_headers.model().clear()
+        tv_headers.model().setHorizontalHeaderLabels(self.header_list)
+    
+    
     def populate_threads(self, current):
-        logging.debug('Inside populate_threads')
-        lv = self.mainwindow.lv_headers
-        lv.model().clear()
+        tv_headers = self.mainwindow.tv_headers
+        self.clear_headers_table()
         logging.debug('lv headers cleared')
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         (reply, count, first, last, name) = nntp_conn.group(currentItem.newsgroup.name)
-        lv.model().setdata
+        
+        (reply, subjects) = nntp_conn.xhdr('subject', str(int(last)-20) + '-' + last)
+        
+        for id, subject in subjects:
+            logging.debug('Inside for loop... processing id: %s' % id)
+            d = {}
+            try:
+                reply, num, tid, list = nntp_conn.head(id)
+            except NNTPTemporaryError:
+                continue
+                
+            for line in list:
+                for header in self.header_list:
+                    if line[:len(header)] == header:
+                        d[header] = line[len(header) + 2:]
+            
+            items = []
+            logging.debug('Inside header loop')
+            it = QStandardItem()
+            it.id = id
+            it.setData(d['Subject'], Qt.DisplayRole)
+            it.setCheckable(False)
+            items.append(it)
+            
+            it = QStandardItem()
+            it.id = id
+            it.setData(d['From'], Qt.DisplayRole)
+            items.append(it)
+            
+            it = QStandardItem()
+            it.id = id
+            it.setData(d['Date'], Qt.DisplayRole)
+            items.append(it)
+            
+            tv_headers.model().appendRow(items)
     
     
     def group_selection_changed(self, current, previous):
         logging.debug('Inside group_selection_changed')
         self.populate_threads(current)
     
+    def header_selection_changed(self):
+        logging.debug('Inside header_selection_changed')
     
     def load_groups(self):
         groups = session.query(Newsgroup).filter_by(subscribed=True)
@@ -69,8 +116,7 @@ class MainWindow(QMainWindow):
             tv.model().appendRow(items)
         
         tv.selectionModel().select(tv.model().index(0, 0), QItemSelectionModel.Select)
-        currentGroup = tv.model().itemFromIndex(tv.currentIndex()) 
-        logging.debug(currentGroup)
+        #currentGroup = tv.model().itemFromIndex(tv.currentIndex()) 
 
 def init_db():
     if not os.path.isdir(dbdir):

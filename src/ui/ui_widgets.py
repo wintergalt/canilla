@@ -1,4 +1,4 @@
-from PyQt4.QtCore import *
+from PyQt4.QtCore import * #@UnusedWildImport
 
 class ThreadListModel(QAbstractListModel):
     def __init__(self, datain, parent=None, *args):

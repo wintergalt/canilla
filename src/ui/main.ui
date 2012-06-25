@@ -20,34 +20,12 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTreeView" name="tv_groups">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="indentation">
-        <number>0</number>
-       </property>
-      </widget>
+      <widget class="QTreeView" name="tv_groups"/>
       <widget class="QSplitter" name="splitter">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QListView" name="lv_headers"/>
+       <widget class="QTreeView" name="tv_headers"/>
        <widget class="QTextBrowser" name="tb_body"/>
       </widget>
      </widget>
@@ -60,7 +38,7 @@
      <x>0</x>
      <y>0</y>
      <width>788</width>
-     <height>23</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
