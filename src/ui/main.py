@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Mon Jun 25 09:07:28 2012
+# Created: Mon Jun 25 13:40:21 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,6 +33,9 @@ class Ui_MainWindow(object):
         self.tv_headers = QtGui.QTreeView(self.splitter)
         self.tv_headers.setObjectName(_fromUtf8("tv_headers"))
         self.tb_body = QtGui.QTextBrowser(self.splitter)
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("DejaVu Sans"))
+        self.tb_body.setFont(font)
         self.tb_body.setObjectName(_fromUtf8("tb_body"))
         self.gridLayout.addWidget(self.splitter_2, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)

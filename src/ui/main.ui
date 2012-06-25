@@ -26,7 +26,13 @@
         <enum>Qt::Vertical</enum>
        </property>
        <widget class="QTreeView" name="tv_headers"/>
-       <widget class="QTextBrowser" name="tb_body"/>
+       <widget class="QTextBrowser" name="tb_body">
+        <property name="font">
+         <font>
+          <family>DejaVu Sans</family>
+         </font>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>

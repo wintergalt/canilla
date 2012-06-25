@@ -108,8 +108,8 @@ class MainWindow(QMainWindow):
         tv_headers = self.mainwindow.tv_headers
         id = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).id
         reply, num, tid, list = nntp_conn.body(id)
-        for line in list:
-            tb_body.append(line)
+        body = "\n".join(list)    
+        tb_body.setText(body)
             
     
     
