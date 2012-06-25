@@ -43,6 +43,10 @@ class MainWindow(QMainWindow):
         tv_headers.selectionModel().currentChanged.connect(self.header_selection_changed)
         tv_headers.setSelectionBehavior(QAbstractItemView.SelectRows)
         tv_headers.setIndentation(0)
+        tv_headers.installEventFilter(ThreadKbFilter())
+        
+    def show_next_article(self):
+        logging.debug('show_next_article')
         
         
     def clear_headers_table(self):
@@ -58,7 +62,7 @@ class MainWindow(QMainWindow):
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         (reply, count, first, last, name) = nntp_conn.group(currentItem.newsgroup.name)
         
-        (reply, subjects) = nntp_conn.xhdr('subject', str(int(last)-20) + '-' + last)
+        (reply, subjects) = nntp_conn.xhdr('subject', str(int(last)-5) + '-' + last)
         
         for id, subject in subjects:
             logging.debug('Inside for loop... processing id: %s' % id)

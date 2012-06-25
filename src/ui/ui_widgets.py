@@ -1,4 +1,9 @@
 from PyQt4.QtCore import * #@UnusedWildImport
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)-8s %(message)s',
+                    datefmt='%d %b %Y %H:%M:%S')
 
 class ThreadListModel(QAbstractListModel):
     def __init__(self, datain, parent=None, *args):
@@ -30,3 +35,21 @@ class ThreadListModel(QAbstractListModel):
         ''' rows is a list that is to be appended 
         at the end of self.listdata '''
         self.listdata.extend(rows)
+        
+        
+class ThreadKbFilter(QObject):
+    
+    def eventFilter(self, obj, evt):
+        logging.debug('inside event filter')
+        if evt.type() == QEvent.KeyPress:
+            if evt.key() == Qt.Key_Space:
+                logging.debug('obj:')
+                logging.debug(obj)
+                return True
+            else:
+                logging.debug('1')
+        else:
+            logging.debug('2')
+            # standard event processing
+            return QObject.eventFilter(obj, evt)
+    

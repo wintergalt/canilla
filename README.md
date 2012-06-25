@@ -1,4 +1,4 @@
-canilla_reader
+canilla newsreader
 ==============
 
-A newsreader
+A simple Python newsreader
