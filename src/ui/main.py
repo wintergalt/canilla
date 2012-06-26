@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Mon Jun 25 13:40:21 2012
+# Created: Tue Jun 26 12:55:21 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -44,14 +44,24 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menu_File = QtGui.QMenu(self.menubar)
         self.menu_File.setObjectName(_fromUtf8("menu_File"))
+        self.menu_Help = QtGui.QMenu(self.menubar)
+        self.menu_Help.setObjectName(_fromUtf8("menu_Help"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
         self.actionE_xit = QtGui.QAction(MainWindow)
         self.actionE_xit.setObjectName(_fromUtf8("actionE_xit"))
+        self.actionHelp = QtGui.QAction(MainWindow)
+        self.actionHelp.setObjectName(_fromUtf8("actionHelp"))
+        self.actionAbout_canilla = QtGui.QAction(MainWindow)
+        self.actionAbout_canilla.setObjectName(_fromUtf8("actionAbout_canilla"))
         self.menu_File.addAction(self.actionE_xit)
+        self.menu_Help.addAction(self.actionHelp)
+        self.menu_Help.addSeparator()
+        self.menu_Help.addAction(self.actionAbout_canilla)
         self.menubar.addAction(self.menu_File.menuAction())
+        self.menubar.addAction(self.menu_Help.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -59,5 +69,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_Help.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionE_xit.setText(QtGui.QApplication.translate("MainWindow", "E&xit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionHelp.setText(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAbout_canilla.setText(QtGui.QApplication.translate("MainWindow", "About canilla", None, QtGui.QApplication.UnicodeUTF8))
 
