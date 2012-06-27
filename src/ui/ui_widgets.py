@@ -6,6 +6,18 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(message)s',
                     datefmt='%d %b %Y %H:%M:%S')
 
+HTML_COLORS = ['Black',
+     'BlueViolet',
+     'Brown',
+     'CornflowerBlue',
+     'Crimson',
+     'DarkGreen',
+     'DarkOrange',
+     'DarkTurquoise',
+     'DeepPink',
+     'MediumAquaMarine',
+     'YellowGreen']
+
 class ThreadListModel(QAbstractListModel):
     def __init__(self, datain, parent=None, *args):
         ''' datain: a list where each item is a row'''

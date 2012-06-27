@@ -7,6 +7,7 @@ import sys, os, logging
 from datetime import datetime
 from nntplib import * #@UnusedWildImport
 from ui.ui_widgets import * #@UnusedWildImport
+from ui import ui_widgets
 
 dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
 dbfile = os.path.join(dbdir, 'canilla.sqlite3')
@@ -43,6 +44,10 @@ class MainWindow(QMainWindow):
         tv_headers.selectionModel().currentChanged.connect(self.header_selection_changed)
         tv_headers.setSelectionBehavior(QAbstractItemView.SelectRows)
         tv_headers.setIndentation(0)
+        
+        tb = self.mainwindow.tb_body
+        tb.setLineWrapColumnOrWidth(76)
+        tb.setLineWrapMode(QTextEdit.FixedColumnWidth)
         
     def show_next_article(self):
         logging.debug('show_next_article')
@@ -98,16 +103,30 @@ class MainWindow(QMainWindow):
         self.populate_threads(current)
     
     
+    def count_greater_thans(self, text):
+        ''' Returns the number of leading '>'s in text '''
+        if text:
+            return len(text) - len(str.lstrip(text, '>'))
+        else:
+            return 0
+    
+    def format_text(self, lines):
+        formatted_text = '<p>'
+        for line in lines:
+            level = self.count_greater_thans(line)
+            formatted_text += '<font color="' + ui_widgets.HTML_COLORS[level] + '">' + line + '</font>' + '<br/>'
+        formatted_text += '</p>'
+        return formatted_text
+        
     def populate_body(self, current):
         tb_body = self.mainwindow.tb_body
         tb_body.clear()
         tv_headers = self.mainwindow.tv_headers
         id = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).id
         reply, num, tid, list = nntp_conn.body(id)
-        body = "\n".join(list)    
+        body = self.format_text(list)
+        logging.fatal(body)
         tb_body.setText(body)
-            
-    
     
     def header_selection_changed(self, current, previous):
         self.populate_body(current)
