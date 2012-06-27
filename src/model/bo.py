@@ -11,6 +11,8 @@ class Message(Entity):
     body = Field(UnicodeText) 
     date_sent = Field(DateTime)
     newsgoups = ManyToMany('Newsgroup')
+    read = Field(Boolean)
+    message_id = Field(Unicode(255))
     
     def __repr__(self):
         return self.subject
