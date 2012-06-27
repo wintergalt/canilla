@@ -125,7 +125,6 @@ class MainWindow(QMainWindow):
         id = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).id
         reply, num, tid, list = nntp_conn.body(id)
         body = self.format_text(list)
-        logging.fatal(body)
         tb_body.setText(body)
     
     def header_selection_changed(self, current, previous):
