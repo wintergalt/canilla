@@ -8,12 +8,15 @@ class Message(Entity):
     using_options(tablename='messages')
     primary_key=True
     subject = Field(Unicode(255))
-    body = Field(UnicodeText) 
     date_sent = Field(DateTime)
     newsgoups = ManyToMany('Newsgroup')
     read = Field(Boolean)
     message_id = Field(Unicode(255))
     number = Field(Integer)
+    
+    def __init__(self, *args, **kwargs):
+        super(Message, self).__init__(*args, **kwargs)
+        self.body = ''
     
     def __repr__(self):
         return self.subject
