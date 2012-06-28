@@ -13,6 +13,7 @@ class Message(Entity):
     newsgoups = ManyToMany('Newsgroup')
     read = Field(Boolean)
     message_id = Field(Unicode(255))
+    number = Field(Integer)
     
     def __repr__(self):
         return self.subject
