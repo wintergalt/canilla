@@ -44,3 +44,6 @@ class NewsServer(Entity):
     port = Field(Integer, default=119)
     newsgroups = OneToMany('Newsgroup')
     
+    def __repr__(self):
+        return self.name
+    

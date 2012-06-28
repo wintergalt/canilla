@@ -58,12 +58,12 @@ class MainWindow(QMainWindow):
         tv_headers.model().clear()
         tv_headers.model().setHorizontalHeaderLabels(self.header_list)
     
-    
     def populate_threads(self, current):
         tv_headers = self.mainwindow.tv_headers
         self.clear_headers_table()
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         (reply, count, first, last, name) = nntp_conn.group(currentItem.newsgroup.name)
+        
         
         (reply, subjects) = nntp_conn.xhdr('subject', str(int(last)-5) + '-' + last)
         
