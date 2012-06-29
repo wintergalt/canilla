@@ -1,6 +1,6 @@
 from PyQt4.QtCore import * #@UnusedWildImport
 from PyQt4.QtGui import * #@UnusedWildImport
-from model.bo import Message, Newsgroup, NewsServer
+from model.bo import Message, Newsgroup, NewsServer, Preferences
 from ui.main import Ui_MainWindow
 from elixir import * #@UnusedWildImport
 import sys, os, logging
