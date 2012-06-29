@@ -8,11 +8,11 @@ from datetime import datetime
 from nntplib import * #@UnusedWildImport
 from ui.ui_widgets import * #@UnusedWildImport
 from ui import ui_widgets
+from model.nntp_stuff import CanillaNNTP
+from model.utils import * 
 
 dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
 dbfile = os.path.join(dbdir, 'canilla.sqlite3')
-nntp_conn = None
-
 
 class MainWindow(QMainWindow):
     
@@ -22,6 +22,9 @@ class MainWindow(QMainWindow):
         self.mainwindow.setupUi(self)
         self.header_list = ['Subject', 'From', 'Date']
         self.ui_extra_setup()
+        self.canilla_utils = CanillaUtils(session)
+        self.current_newsserver = self.canilla_utils.get_default_server()
+        self.nntp = CanillaNNTP(self.current_newsserver)
         self.load_groups()
         
         
@@ -49,6 +52,7 @@ class MainWindow(QMainWindow):
         tb.setLineWrapColumnOrWidth(76)
         tb.setLineWrapMode(QTextEdit.FixedColumnWidth)
         
+        
     def show_next_article(self):
         logging.debug('show_next_article')
         
@@ -58,27 +62,18 @@ class MainWindow(QMainWindow):
         tv_headers.model().clear()
         tv_headers.model().setHorizontalHeaderLabels(self.header_list)
     
+
     def populate_threads(self, current):
         tv_headers = self.mainwindow.tv_headers
         self.clear_headers_table()
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
-        (reply, count, first, last, name) = nntp_conn.group(currentItem.newsgroup.name)
+        # retrieve stored and new headers
+        stored_headers = self.canilla_utils.retrieve_stored_headers(currentItem.newsgroup)
+        new_headers = self.nntp.retrieve_headers(currentItem.newsgroup.name)
+        # combine stored + new headers
+        now combine them!
         
-        
-        (reply, subjects) = nntp_conn.xhdr('subject', str(int(last)-5) + '-' + last)
-        
-        for id, subject in subjects:
-            d = {}
-            try:
-                reply, num, tid, list = nntp_conn.head(id)
-            except NNTPTemporaryError:
-                continue
-                
-            for line in list:
-                for header in self.header_list:
-                    if line[:len(header)] == header:
-                        d[header] = line[len(header) + 2:]
-            
+        for d in new_headers:
             items = []
             it = QStandardItem()
             it.id = id
@@ -132,7 +127,8 @@ class MainWindow(QMainWindow):
         
 
     def load_groups(self):
-        groups = session.query(Newsgroup).filter_by(subscribed=True)
+        #groups = session.query(Newsgroup).filter_by(subscribed=True)
+        groups = self.canilla_utils.get_subscribed_groups(self.current_newsserver)
         tv = self.mainwindow.tv_groups
         
         for g in groups:
@@ -145,7 +141,10 @@ class MainWindow(QMainWindow):
             tv.model().appendRow(items)
         
         tv.selectionModel().select(tv.model().index(0, 0), QItemSelectionModel.Select)
-        #currentGroup = tv.model().itemFromIndex(tv.currentIndex()) 
+        
+    def closeEvent(self, *args, **kwargs):
+        self.nntp.close_connection()
+        return QMainWindow.closeEvent(self, *args, **kwargs)
 
 def init_db():
     if not os.path.isdir(dbdir):
@@ -160,7 +159,8 @@ def init_db():
         session.query(NewsServer).delete()
         
         defaultServer = NewsServer(name=u'Default', 
-            hostname='news.gmane.org')
+            hostname='news.gmane.org',
+            port=119)
         newsgroupOne = Newsgroup(name=u'gmane.comp.python.general', 
                        newsserver=defaultServer,
                        subscribed=True) 
@@ -183,6 +183,9 @@ def init_db():
                              body='Body test 4',
                              date_sent=datetime.now(),
                              newsgroups=newsgroupTwo)
+        
+        prefs = Preferences(default_server=defaultServer)
+        
         session.commit()
 
 
@@ -190,18 +193,12 @@ def init_app():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)-8s %(message)s',
                         datefmt='%d %b %Y %H:%M:%S')
-    global nntp_conn
-    nntp_conn = NNTP('news.gmane.org', 119)
 
 
 if __name__ == '__main__':
-    try:
-        init_db()
-        init_app()
-        app = QApplication(sys.argv)
-        frame = MainWindow()
-        frame.show()
-        app.exec_()
-    finally:
-        if nntp_conn:
-            nntp_conn.quit()
+    init_db()
+    init_app()
+    app = QApplication(sys.argv)
+    frame = MainWindow()
+    frame.show()
+    app.exec_()

@@ -43,7 +43,12 @@ class NewsServer(Entity):
     hostname = Field(Unicode(255))
     port = Field(Integer, default=119)
     newsgroups = OneToMany('Newsgroup')
+    prefs = ManyToOne('Preferences')
     
     def __repr__(self):
         return self.name
     
+class Preferences(Entity):
+    using_options(tablename='preferences')
+    primary_key = True
+    default_server = OneToOne('NewsServer', inverse='prefs')
