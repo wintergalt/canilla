@@ -1,7 +1,7 @@
-import unittest, os, logging
-from elixir import *
-from model.utils import *
-from model.bo import *
+import unittest, os
+from elixir import * #@UnusedWildImport
+from model.utils import * #@UnusedWildImport
+from model.bo import * #@UnusedWildImport
 
 class TestCanillaUtils(unittest.TestCase):
     

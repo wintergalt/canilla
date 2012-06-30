@@ -1,5 +1,5 @@
 from bo import Preferences, Newsgroup, Message
-from elixir import *
+from elixir import * #@UnusedWildImport
 import logging
 
 class CanillaUtils():
@@ -9,7 +9,6 @@ class CanillaUtils():
         self.sql_session = sql_session
         
     def get_default_server(self):
-        #prefs = Preferences.query.first()
         prefs = self.sql_session.query(Preferences).first()
         return prefs.default_server
         
@@ -21,16 +20,11 @@ class CanillaUtils():
     
     def retrieve_stored_headers(self, ng):
         logging.fatal('Inside retrieve_stored_headers')
-        #messages = Message.query.filter_by(newsgroup=ng)
         messages = self.sql_session.query(Message).filter_by(newsgroup=ng).all()
         headers = []
         for m in messages:
             d = {}
-
-            for line in list:
-                for header in self.header_list:
-                    if line[:len(header)] == header:
-                        d[header] = line[len(header) + 2:]
+            d[header] = line[len(header) + 2:]
                         
             headers.append(d)
         return headers

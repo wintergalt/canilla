@@ -1,6 +1,8 @@
 from elixir import * #@UnusedWildImport
 from PyQt4.QtGui import * #@UnusedWildImport
 
+metadata.bind = 'sqlite:///canilla.sqlite3'
+metadata.bind.echo = True
 
 class Message(Entity):
     using_options(tablename='messages')
