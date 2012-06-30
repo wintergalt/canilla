@@ -1,15 +1,12 @@
 from elixir import * #@UnusedWildImport
 from PyQt4.QtGui import * #@UnusedWildImport
 
-metadata.bind = 'sqlite:///canilla.sqlite3'
-metadata.bind.echo = True
-
 class Message(Entity):
     using_options(tablename='messages')
     primary_key=True
     subject = Field(Unicode(255))
     date_sent = Field(DateTime)
-    newsgoups = ManyToMany('Newsgroup')
+    newsgroups = ManyToMany('Newsgroup')
     read = Field(Boolean)
     message_id = Field(Unicode(255))
     number = Field(Integer)
