@@ -23,11 +23,11 @@ class CanillaNNTP():
                 reply, num, tid, list = self.nntp_conn.head(id)
             except NNTPTemporaryError:
                 continue
-                
+            
             for line in list:
                 for header in self.header_list:
                     header = line[:len(header)]
-                        d[header] = line[len(header) + 2:]
+                    d[header] = line[len(header) + 2:]
                         
             headers.append(d)
         return headers

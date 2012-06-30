@@ -1,6 +1,12 @@
 from elixir import * #@UnusedWildImport
 from PyQt4.QtGui import * #@UnusedWildImport
+import os
 
+dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
+dbfile = os.path.join(dbdir, 'canilla.sqlite3')
+metadata.bind = 'sqlite:///%s' % dbfile
+metadata.bind.echo = True
+    
 class Message(Entity):
     using_options(tablename='messages')
     primary_key=True
