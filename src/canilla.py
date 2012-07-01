@@ -67,13 +67,12 @@ class MainWindow(QMainWindow):
         tv_headers = self.mainwindow.tv_headers
         self.clear_headers_table()
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
-        # retrieve stored and new headers
+        # 1- retrieve new headers and store them
+        self.nntp.retrieve_new_headers(currentItem.newsgroup.name)
+        # 2- then, retrieve the just-updated stored headers 
         stored_headers = self.canilla_utils.retrieve_stored_headers(currentItem.newsgroup)
-        new_headers = self.nntp.retrieve_headers(currentItem.newsgroup.name)
-        # combine stored + new headers
-        #now combine them!
         
-        for d in new_headers:
+        for d in stored_headers:
             items = []
             it = QStandardItem()
             it.id = id

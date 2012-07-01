@@ -12,7 +12,7 @@ class CanillaNNTP():
         logging.fatal('updating newsgroups')
         pass
     
-    def retrieve_headers(self, newsgroup):
+    def retrieve_new_headers(self, newsgroup):
         logging.fatal('retrieving headers')
         (reply, count, first, last, name) = self.nntp_conn.group(newsgroup)
         (reply, subjects) = self.nntp_conn.xhdr('subject', str(int(last)-5) + '-' + last)
