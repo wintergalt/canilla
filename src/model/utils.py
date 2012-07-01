@@ -1,5 +1,6 @@
 from bo import Preferences, Newsgroup, Message
 from elixir import * #@UnusedWildImport
+from sqlalchemy import func, desc
 import logging
 
 class CanillaUtils():
@@ -21,4 +22,18 @@ class CanillaUtils():
     def retrieve_stored_messages(self, ng):
         logging.fatal('Inside retrieve_stored_headers')
         return ng.messages
+    
+    def get_last_stored_message(self, ng):
+        '''
+        return self.sql_session.query(Message) \
+            .filter(Message.number==func.max(Message.number).select())\
+            .first()
+        '''
+        
+        #return self.sql_session.query(Message).join(ng.messages).order_by(desc(Message.number)).first()
+        return self.sql_session.query(ng.messages).order_by(desc(Message.number)).first()
+    
+    
+    
+    
     

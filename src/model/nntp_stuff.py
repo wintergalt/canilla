@@ -1,5 +1,6 @@
 from nntplib import *
 import logging
+from model.utils import CanillaUtils
 
 class CanillaNNTP():
     
@@ -7,6 +8,7 @@ class CanillaNNTP():
         logging.fatal('server: %s' % server)
         logging.fatal('port: %d' % port)
         self.nntp_conn = NNTP(server.hostname, port)
+        self.cu = CanillaUtils()
     
     def update_newsgroup(self, newsgroup):
         logging.fatal('updating newsgroups')
@@ -14,6 +16,7 @@ class CanillaNNTP():
     
     def retrieve_new_headers(self, newsgroup):
         logging.fatal('retrieving headers')
+        last_stored = self.cu.get_last_stored_message(newsgroup)
         (reply, count, first, last, name) = self.nntp_conn.group(newsgroup)
         (reply, subjects) = self.nntp_conn.xhdr('subject', str(int(last)-5) + '-' + last)
         headers = []

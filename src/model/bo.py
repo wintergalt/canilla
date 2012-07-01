@@ -41,7 +41,7 @@ class Message(Entity):
         self.body = ''
     
     def __repr__(self):
-        return self.subject
+        return '[message number: %d]' % self.number
     
 class Newsgroup(Entity):
     using_options(tablename='newsgroups')

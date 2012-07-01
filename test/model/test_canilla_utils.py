@@ -50,3 +50,13 @@ class TestCanillaUtils(unittest.TestCase):
         for msg in stored_messages:
             self.assertIsInstance(msg, Message)
         
+        
+    def test_max_message_number(self):
+        logging.info('testing get_max_message_number')
+        ds = self.cu.get_default_server()
+        first_group = self.cu.get_subscribed_groups(ds)[0]
+        logging.info('group id is %d' % first_group.id)
+        last_message = self.cu.get_last_stored_message(first_group)
+        self.assertIsNotNone(last_message)
+        self.assertIsInstance(last_message, Message)
+        logging.info('last message number: %d' % last_message.number)
