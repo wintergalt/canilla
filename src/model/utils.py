@@ -18,14 +18,7 @@ class CanillaUtils():
             ns = self.get_default_server()
         return self.sql_session.query(Newsgroup).filter_by(newsserver=ns).filter_by(subscribed=True).all()
     
-    def retrieve_stored_headers(self, ng):
+    def retrieve_stored_messages(self, ng):
         logging.fatal('Inside retrieve_stored_headers')
-        messages = self.sql_session.query(Message).filter_by(newsgroup=ng).all()
-        headers = []
-        for m in messages:
-            d = {}
-            d[header] = line[len(header) + 2:]
-                        
-            headers.append(d)
-        return headers
+        return ng.messages
     
