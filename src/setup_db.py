@@ -28,23 +28,26 @@ def init_db():
         newsgroupTwo = Newsgroup(name=u'gmane.comp.python.django.user', 
                        newsserver=defaultServer,
                        subscribed=True) 
-        messageOne = Message(subject='Test 1',
-                             body='Body test 1',
-                             date_sent=datetime.now(),
+        messageOne = Message(read=False,
+                             message_id='messageOne',
+                             number=1,
+                             headers = {'Subject':'Message One', 'From':'diego1@python.org'},
                              newsgroups=[newsgroupOne])
-        messageTwo = Message(subject='Test 2',
-                             body='Body test 2',
-                             date_sent=datetime.now(),
+        messageTwo = Message(read=False,
+                             message_id='messageTwo',
+                             number=2,
+                             headers = {'Subject':'Message Two', 'From':'diego2@python.org'},
                              newsgroups=[newsgroupOne])
-        messageThree = Message(subject='Test 3',
-                             body='Body test 3',
-                             date_sent=datetime.now(),
+        messageOne = Message(read=False,
+                             message_id='messageThree',
+                             number=3,
+                             headers = {'Subject':'Message Three', 'From':'diego3@python.org'},
                              newsgroups=[newsgroupTwo])
-        messageFour = Message(subject='Test 4',
-                             body='Body test 4',
-                             date_sent=datetime.now(),
+        messageOne = Message(read=False,
+                             message_id='messageFour',
+                             number=4,
+                             headers = {'Subject':'Message Four', 'From':'diego4@python.org'},
                              newsgroups=[newsgroupTwo])
-        
         prefs = Preferences(default_server=defaultServer)
         
         session.commit()

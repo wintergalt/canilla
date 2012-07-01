@@ -1,4 +1,6 @@
 from elixir import * #@UnusedWildImport
+from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.ext.associationproxy import association_proxy
 from PyQt4.QtGui import * #@UnusedWildImport
 import os
 
@@ -7,23 +9,40 @@ dbfile = os.path.join(dbdir, 'canilla.sqlite3')
 metadata.bind = 'sqlite:///%s' % dbfile
 metadata.bind.echo = True
     
+class Header(Entity):
+    using_options(tablename='headers')
+    primary_key=True
+    header_name = Field(Unicode(500))
+    header_value = Field(Unicode(500))
+    message = ManyToOne('Message')
+    
+    #see http://docs.sqlalchemy.org/en/rel_0_7/orm/collections.html#custom-dictionary-based-collections
+    
+    def __init__(self, hn, hv):
+        self.header_name = hn
+        self.header_value = hv
+        
+    def __repr__(self):
+        return '[', self.header_name, ':', self.header_value, ']'
+
 class Message(Entity):
     using_options(tablename='messages')
     primary_key=True
-    subject = Field(Unicode(255))
-    date_sent = Field(DateTime)
     newsgroups = ManyToMany('Newsgroup')
     read = Field(Boolean)
     message_id = Field(Unicode(255))
     number = Field(Integer)
+    headersdict = OneToMany('Header', collection_class=attribute_mapped_collection('header_name'))
+    headers = association_proxy('headersdict', 'header_value', creator=Header)
     
     def __init__(self, *args, **kwargs):
         super(Message, self).__init__(*args, **kwargs)
+        # body is a transient attribute
         self.body = ''
     
     def __repr__(self):
         return self.subject
-
+    
 class Newsgroup(Entity):
     using_options(tablename='newsgroups')
     primary_key=True
