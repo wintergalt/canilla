@@ -76,18 +76,18 @@ class MainWindow(QMainWindow):
         for mess in stored_headers:
             items = []
             it = QStandardItem()
-            it.id = id
+            it.id = mess.message_id
             it.setData(mess.headers['Subject'], Qt.DisplayRole)
             it.setCheckable(False)
             items.append(it)
             
             it = QStandardItem()
-            it.id = id
+            it.id = mess.message_id
             it.setData(mess.headers['From'], Qt.DisplayRole)
             items.append(it)
             
             it = QStandardItem()
-            it.id = id
+            it.id = mess.message_id
             it.setData(mess.headers['Date'], Qt.DisplayRole)
             items.append(it)
             
@@ -118,8 +118,8 @@ class MainWindow(QMainWindow):
         tb_body.clear()
         tv_headers = self.mainwindow.tv_headers
         id = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).id
-        reply, num, tid, list = nntp_conn.body(id)
-        body = self.format_text(list)
+        body = self.nntp.retrieve_body(id)
+        body = self.format_text(body)
         tb_body.setText(body)
     
     def header_selection_changed(self, current, previous):

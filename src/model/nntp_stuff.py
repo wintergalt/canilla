@@ -31,7 +31,7 @@ class CanillaNNTP():
     def retrieve_new_headers(self, newsgroup):
         last_stored = self.cu.get_last_stored_message(newsgroup)
         (reply, count, first, last, name) = self.nntp_conn.group(newsgroup.name)
-        range = self.calculate_range(last_stored.number, int(last))
+        range = self.calculate_range(last_stored.number if last_stored else 0, int(last))
         
         if not range:
             return []
@@ -63,6 +63,13 @@ class CanillaNNTP():
         
         return headers_list
     
+    def retrieve_body(self, message_id):
+        logging.fatal('type of id: %s' % type(message_id))
+        logging.fatal('message_id: %s' % message_id)
+        reply, num, tid, list = self.nntp_conn.body(message_id)
+        logging.fatal('type of list: %s' % type(list))
+        return list
+        
     def close_connection(self):
         logging.fatal('closing connection')
         self.nntp_conn.quit()
