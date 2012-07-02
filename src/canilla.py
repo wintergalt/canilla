@@ -3,13 +3,13 @@ from PyQt4.QtGui import * #@UnusedWildImport
 from model.bo import Message, Newsgroup, NewsServer, Preferences
 from ui.main import Ui_MainWindow
 from elixir import * #@UnusedWildImport
-import sys, os, logging
-from datetime import datetime
+import sys, os
 from nntplib import * #@UnusedWildImport
 from ui.ui_widgets import * #@UnusedWildImport
 from ui import ui_widgets
 from model.nntp_stuff import CanillaNNTP
-from model.utils import * 
+from model.utils import CanillaUtils 
+from setup_db import *
 
 dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
 dbfile = os.path.join(dbdir, 'canilla.sqlite3')
@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.mainwindow.setupUi(self)
         self.header_list = ['Subject', 'From', 'Date']
         self.ui_extra_setup()
-        self.canilla_utils = CanillaUtils(session)
+        self.canilla_utils = CanillaUtils()
         self.current_newsserver = self.canilla_utils.get_default_server()
         self.nntp = CanillaNNTP(self.current_newsserver)
         self.load_groups()
@@ -67,27 +67,28 @@ class MainWindow(QMainWindow):
         tv_headers = self.mainwindow.tv_headers
         self.clear_headers_table()
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
+        newsgroup = currentItem.newsgroup
         # 1- retrieve new headers and store them
-        self.nntp.retrieve_new_headers(currentItem.newsgroup.name)
+        self.canilla_utils.store_new_headers(self.nntp.retrieve_new_headers(newsgroup))
         # 2- then, retrieve the just-updated stored headers 
-        stored_headers = self.canilla_utils.retrieve_stored_headers(currentItem.newsgroup)
+        stored_headers = self.canilla_utils.retrieve_stored_messages(newsgroup)
         
-        for d in stored_headers:
+        for mess in stored_headers:
             items = []
             it = QStandardItem()
             it.id = id
-            it.setData(d['Subject'], Qt.DisplayRole)
+            it.setData(mess.headers['Subject'], Qt.DisplayRole)
             it.setCheckable(False)
             items.append(it)
             
             it = QStandardItem()
             it.id = id
-            it.setData(d['From'], Qt.DisplayRole)
+            it.setData(mess.headers['From'], Qt.DisplayRole)
             items.append(it)
             
             it = QStandardItem()
             it.id = id
-            it.setData(d['Date'], Qt.DisplayRole)
+            it.setData(mess.headers['Date'], Qt.DisplayRole)
             items.append(it)
             
             tv_headers.model().appendRow(items)
@@ -153,6 +154,7 @@ def init_app():
 
 
 if __name__ == '__main__':
+    init_db()
     init_app()
     app = QApplication(sys.argv)
     frame = MainWindow()

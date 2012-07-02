@@ -2,6 +2,7 @@ import unittest, os
 from elixir import * #@UnusedWildImport
 from model.utils import * #@UnusedWildImport
 from model.bo import * #@UnusedWildImport
+from setup_db import *
 
 class TestCanillaUtils(unittest.TestCase):
     
@@ -9,18 +10,21 @@ class TestCanillaUtils(unittest.TestCase):
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(levelname)-8s %(message)s',
                             datefmt='%d %b %Y %H:%M:%S')
+        '''
         dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
         dbfile = os.path.join(dbdir, 'canilla.sqlite3')
         metadata.bind = 'sqlite:///%s' % dbfile
         metadata.bind.echo = False
         setup_all()
-        self.cu = CanillaUtils(session)
+        '''
+        init_db()
+        self.cu = CanillaUtils()
             
     def test_default_server(self):
         logging.info('testing get_default_server')
         ds = self.cu.get_default_server()
         self.assertIsInstance(ds, NewsServer)
-        assert 'news.gmane.org' == ds.hostname
+        self.assertEqual('news.gmane.org', ds.hostname)
         
     def test_subscribed_groups(self):
         logging.info('testing get_subscribed_groups')

@@ -31,24 +31,26 @@ def init_db():
         messageOne = Message(read=False,
                              message_id='messageOne',
                              number=1,
-                             headers = {'Subject':'Message One', 'From':'diego1@python.org'},
+                             headers = {'Subject':'Message One', 'From':'diego1@python.org', 'Date':'Mon, 2 Jul 2012 08:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupOne])
         messageTwo = Message(read=False,
                              message_id='messageTwo',
                              number=2,
-                             headers = {'Subject':'Message Two', 'From':'diego2@python.org'},
+                             headers = {'Subject':'Message Two', 'From':'diego2@python.org', 'Date':'Mon, 2 Jul 2012 09:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupOne])
         messageOne = Message(read=False,
                              message_id='messageThree',
                              number=3,
-                             headers = {'Subject':'Message Three', 'From':'diego3@python.org'},
+                             headers = {'Subject':'Message Three', 'From':'diego3@python.org', 'Date':'Mon, 2 Jul 2012 10:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupTwo])
         messageOne = Message(read=False,
                              message_id='messageFour',
                              number=4,
-                             headers = {'Subject':'Message Four', 'From':'diego4@python.org'},
+                             headers = {'Subject':'Message Four', 'From':'diego4@python.org', 'Date':'Mon, 2 Jul 2012 11:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupTwo])
-        prefs = Preferences(default_server=defaultServer)
+        
+        prefs = Preferences(default_server=defaultServer, max_headers=5)
+        
         
         session.commit()
 

@@ -73,4 +73,10 @@ class NewsServer(Entity):
 class Preferences(Entity):
     using_options(tablename='preferences')
     primary_key = True
-    default_server = OneToOne('NewsServer', inverse='prefs')
+    default_server = OneToOne('NewsServer', inverse="prefs")
+    max_headers = Field(Integer)
+    
+    def __repr__(self):
+        return '[default_server: %s]' % self.default_server
+    
+    
