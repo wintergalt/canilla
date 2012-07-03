@@ -3,7 +3,7 @@ from PyQt4.QtGui import * #@UnusedWildImport
 from model.bo import Message, Newsgroup, NewsServer, Preferences
 from ui.main import Ui_MainWindow
 from elixir import * #@UnusedWildImport
-import sys, os
+import os
 from nntplib import * #@UnusedWildImport
 from ui.ui_widgets import * #@UnusedWildImport
 from ui import ui_widgets
@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
         self.canilla_utils = CanillaUtils()
         self.current_newsserver = self.canilla_utils.get_default_server()
         self.nntp = CanillaNNTP(self.current_newsserver)
+        self.canilla_utils.nntp = self.nntp
         self.load_groups()
         
         
@@ -68,8 +69,12 @@ class MainWindow(QMainWindow):
         self.clear_headers_table()
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         newsgroup = currentItem.newsgroup
+        last_stored = self.cu.get_last_stored_message(newsgroup)
         # 1- retrieve new headers and store them
-        self.canilla_utils.store_new_headers(self.nntp.retrieve_new_headers(newsgroup))
+        max_hdrs_to_rtrv = self.cu.get_max_headers()
+        self.canilla_utils.store_new_headers(
+            self.nntp.retrieve_new_headers(
+                newsgroup, last_stored, max_hdrs_to_rtrv))
         # 2- then, retrieve the just-updated stored headers 
         stored_headers = self.canilla_utils.retrieve_stored_messages(newsgroup)
         

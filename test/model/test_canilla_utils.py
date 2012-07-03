@@ -10,21 +10,24 @@ class TestCanillaUtils(unittest.TestCase):
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(levelname)-8s %(message)s',
                             datefmt='%d %b %Y %H:%M:%S')
-        '''
         dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
         dbfile = os.path.join(dbdir, 'canilla.sqlite3')
         metadata.bind = 'sqlite:///%s' % dbfile
         metadata.bind.echo = False
         setup_all()
-        '''
         init_db()
         self.cu = CanillaUtils()
-            
+        nntp = CanillaNNTP(self.cu.get_default_server())
+        self.cu.nntp = nntp
+        self.cu.default_server = self.cu.get_default_server()
+        
+        
     def test_default_server(self):
         logging.info('testing get_default_server')
         ds = self.cu.get_default_server()
         self.assertIsInstance(ds, NewsServer)
         self.assertEqual('news.gmane.org', ds.hostname)
+        
         
     def test_subscribed_groups(self):
         logging.info('testing get_subscribed_groups')
@@ -33,6 +36,7 @@ class TestCanillaUtils(unittest.TestCase):
         assert len(subscribed_groups) > 0
         for ng in subscribed_groups:
             self.assertIsInstance(ng, Newsgroup)
+        
         
     def test_stored_messages(self):
         logging.info('testing get_stored_messages')
@@ -65,6 +69,7 @@ class TestCanillaUtils(unittest.TestCase):
         self.assertIsInstance(last_message, Message)
         logging.info('last message number: %d' % last_message.number)
         
-    def test_retrieve_newsgroups(self):
-        logging.info('testing get_max_message_number')
-        ngs = self.cu.retrieve_newsgroups()
+        
+    def test_update_newsgroups(self):
+        logging.info('testing update_newsgroups')
+        self.cu.update_newsgroups()

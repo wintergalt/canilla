@@ -2,8 +2,8 @@ import unittest
 from elixir import * #@UnusedWildImport
 from model.utils import * #@UnusedWildImport
 from model.bo import * #@UnusedWildImport
-from model.nntp_stuff import *
-from setup_db import *
+from model.nntp_stuff import * #@UnusedWildImport
+from setup_db import * #@UnusedWildImport
 
 class TestCanillaNntp(unittest.TestCase):
     
@@ -20,4 +20,6 @@ class TestCanillaNntp(unittest.TestCase):
     def test_retrieve_newsgroups(self):
         logging.info('testing retrieve_newsgroups')
         ngs = self.nntp.retrieve_newsgroups()
+        for idx, ng in enumerate(ngs):
+            logging.fatal('ng: %s (%d)' % (ng, idx))
     

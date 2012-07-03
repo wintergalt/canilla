@@ -28,7 +28,7 @@ def init_db():
         newsgroupTwo = Newsgroup(name=u'gmane.comp.python.django.user', 
                        newsserver=defaultServer,
                        subscribed=True) 
-        '''
+        
         messageOne = Message(read=False,
                              message_id='messageOne',
                              number=1,
@@ -49,7 +49,6 @@ def init_db():
                              number=4,
                              headers = {'Subject':'Message Four', 'From':'diego4@python.org', 'Date':'Mon, 2 Jul 2012 11:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupTwo])
-                             '''
         
         prefs = Preferences(default_server=defaultServer, max_headers=5)
         

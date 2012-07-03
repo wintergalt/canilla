@@ -46,7 +46,7 @@ class Message(Entity):
 class Newsgroup(Entity):
     using_options(tablename='newsgroups')
     primary_key=True
-    name = Field(Unicode(255))
+    name = Field(Unicode(255), unique=True)
     subscribed = Field(Boolean)
     flag = Field(Unicode(1))
     messages = ManyToMany('Message')
@@ -62,8 +62,8 @@ class Newsgroup(Entity):
 class NewsServer(Entity):
     using_options(tablename='newsservers')
     primary_key=True
-    name = Field(Unicode(255))
-    hostname = Field(Unicode(255))
+    name = Field(Unicode(255), unique=True)
+    hostname = Field(Unicode(255), unique=True)
     port = Field(Integer, default=119)
     newsgroups = OneToMany('Newsgroup')
     prefs = ManyToOne('Preferences')

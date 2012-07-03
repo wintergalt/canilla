@@ -1,6 +1,6 @@
-from nntplib import *
+from nntplib import * #@UnusedWildImport
 import logging
-from model.utils import CanillaUtils
+from model.bo import * #@UnusedWildImport
 import string
 
 class CanillaNNTP():
@@ -10,16 +10,14 @@ class CanillaNNTP():
         logging.fatal('port: %d' % port)
         self.server = server
         self.nntp_conn = NNTP(server.hostname, port)
-        self.cu = CanillaUtils()
     
     def update_newsgroup(self, newsgroup):
         logging.fatal('updating newsgroups')
         pass
     
-    def calculate_range(self, last_stored, last):
+    def calculate_range(self, last_stored, last, max_headers_to_retrieve):
         if last_stored == last:
             return None
-        max_headers_to_retrieve = self.cu.get_max_headers()
         if (last - last_stored) > max_headers_to_retrieve:
             min_range = last - max_headers_to_retrieve
         else:
@@ -27,10 +25,9 @@ class CanillaNNTP():
         return str(min_range) + '-' + str(last)
         
     
-    def retrieve_new_headers(self, newsgroup):
-        last_stored = self.cu.get_last_stored_message(newsgroup)
+    def retrieve_new_headers(self, newsgroup, last_stored, max_headers):
         (reply, count, first, last, name) = self.nntp_conn.group(newsgroup.name)
-        range = self.calculate_range(last_stored.number if last_stored else 0, int(last))
+        range = self.calculate_range(last_stored.number if last_stored else 0, int(last), max_headers)
         
         if not range:
             return []
@@ -70,14 +67,12 @@ class CanillaNNTP():
         return list
         
     def retrieve_newsgroups(self):
+        newsgroups = []
         response, list = self.nntp_conn.list()
-        logging.fatal('response: %s' % response)
         for line in list:
             group, hi, lo, flag = line
-            
-            now store this information in the db
-            
-            
+            newsgroups.append((group, flag))
+        return newsgroups
         
     def close_connection(self):
         logging.fatal('closing connection')
