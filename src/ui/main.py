@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue Jun 26 12:55:21 2012
+# Created: Tue Jul  3 11:35:24 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,7 +56,10 @@ class Ui_MainWindow(object):
         self.actionHelp.setObjectName(_fromUtf8("actionHelp"))
         self.actionAbout_canilla = QtGui.QAction(MainWindow)
         self.actionAbout_canilla.setObjectName(_fromUtf8("actionAbout_canilla"))
-        self.menu_File.addAction(self.actionE_xit)
+        self.actionUpdateNewsgroups = QtGui.QAction(MainWindow)
+        self.actionUpdateNewsgroups.setObjectName(_fromUtf8("actionUpdateNewsgroups"))
+        self.menu_File.addAction(self.actionUpdateNewsgroups)
+        self.menu_File.addSeparator()
         self.menu_Help.addAction(self.actionHelp)
         self.menu_Help.addSeparator()
         self.menu_Help.addAction(self.actionAbout_canilla)
@@ -73,4 +76,5 @@ class Ui_MainWindow(object):
         self.actionE_xit.setText(QtGui.QApplication.translate("MainWindow", "E&xit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionHelp.setText(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout_canilla.setText(QtGui.QApplication.translate("MainWindow", "About canilla", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUpdateNewsgroups.setText(QtGui.QApplication.translate("MainWindow", "U&pdate newsgroups", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -51,7 +51,8 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionE_xit"/>
+    <addaction name="actionUpdateNewsgroups"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -78,6 +79,11 @@
   <action name="actionAbout_canilla">
    <property name="text">
     <string>About canilla</string>
+   </property>
+  </action>
+  <action name="actionUpdateNewsgroups">
+   <property name="text">
+    <string>U&amp;pdate newsgroups</string>
    </property>
   </action>
  </widget>

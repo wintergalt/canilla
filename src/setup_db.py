@@ -22,6 +22,7 @@ def init_db():
         defaultServer = NewsServer(name=u'Default', 
             hostname='news.gmane.org',
             port=119)
+        '''
         newsgroupOne = Newsgroup(name=u'gmane.comp.python.general', 
                        newsserver=defaultServer,
                        subscribed=True) 
@@ -49,8 +50,8 @@ def init_db():
                              number=4,
                              headers = {'Subject':'Message Four', 'From':'diego4@python.org', 'Date':'Mon, 2 Jul 2012 11:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupTwo])
-        
-        prefs = Preferences(default_server=defaultServer, max_headers=5)
+        '''
+        prefs = Preferences(default_server=defaultServer, max_headers=500)
         
         
         session.commit()

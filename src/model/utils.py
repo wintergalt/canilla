@@ -49,18 +49,13 @@ class CanillaUtils():
         return self.sql_session.query(Newsgroup).filter_by(newsserver=ns).all()
     
     def update_newsgroups(self):
-        logging.fatal('Inside update_newsgroups')
-        groups_to_add = []
         nntp_newsgroups = self.nntp.retrieve_newsgroups()
         stored_newsgroups = self.get_stored_newsgroups(self.default_server)
-        logging.fatal('got stored_newsgroups: ')
-        for ng in stored_newsgroups:
-            logging.fatal(ng)
         stored_dict = dict(zip([ng.name for ng in stored_newsgroups], stored_newsgroups))
         groups_to_add = []
         for name, flag in nntp_newsgroups:
             if name not in stored_dict:
-                groups_to_add.append(Newsgroup(name=name, flag=flag, subscribed=False, newsserver=self.default_server))
+                groups_to_add.append(Newsgroup(name=name, flag=flag, subscribed=False, newsserver=self.get_default_server()))
         
         self.sql_session.add_all(groups_to_add)
         self.sql_session.commit()
