@@ -7,7 +7,7 @@ import os
 dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
 dbfile = os.path.join(dbdir, 'canilla.sqlite3')
 metadata.bind = 'sqlite:///%s' % dbfile
-metadata.bind.echo = True
+metadata.bind.echo = False
     
 class Header(Entity):
     using_options(tablename='headers')

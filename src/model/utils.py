@@ -1,8 +1,10 @@
+from __future__ import with_statement
 from bo import Preferences, Newsgroup, Message #@UnusedImport
 from elixir import * #@UnusedWildImport
 from sqlalchemy import desc
 import logging #@UnusedImport
 from nntp_stuff import * #@UnusedWildImport
+import time
 
 class CanillaUtils():
     
@@ -32,16 +34,19 @@ class CanillaUtils():
         return self.sql_session.query(Preferences.max_headers).first()[0]
     
     def store_new_headers(self, headers_list):
-        for d in headers_list:
-            message_newsgroups = []
-            message = Message(message_id=d['Message-ID'], number=d['Number'], headers=d, read=False)
-            ns_list = d['Newsgroups'].split(',')
-            for ns in ns_list:
-                stored_newsgroup = self.sql_session.query(Newsgroup).filter_by(name=ns).first()
-                if stored_newsgroup:
-                    message_newsgroups.append(stored_newsgroup)
-            message.newsgroups = message_newsgroups
-        self.sql_session.commit()
+        timer = Timer()
+        with timer:
+            for d in headers_list:
+                message_newsgroups = []
+                message = Message(message_id=d['Message-ID'], number=d['Number'], headers=d, read=False)
+                ns_list = d['Newsgroups'].split(',')
+                for ns in ns_list:
+                    stored_newsgroup = self.sql_session.query(Newsgroup).filter_by(name=ns).first()
+                    if stored_newsgroup:
+                        message_newsgroups.append(stored_newsgroup)
+                message.newsgroups = message_newsgroups
+            self.sql_session.commit()
+        logging.fatal('duration of store_new_headers: %d' % timer.duration_in_seconds())
         
     def get_stored_newsgroups(self, ns):
         if not ns:
@@ -60,4 +65,16 @@ class CanillaUtils():
         self.sql_session.add_all(groups_to_add)
         self.sql_session.commit()
         
+class Timer(object):
+    
+    def __enter__(self):
+        self.__start = time.time()
+    
+    def __exit__(self, type, value, traceback):
+        self.__finish = time.time()
+        
+    def duration_in_seconds(self):
+        return self.__finish - self.__start
+    
+    
         

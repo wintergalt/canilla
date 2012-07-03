@@ -10,7 +10,7 @@ def init_db():
     if not os.path.isdir(dbdir):
         os.mkdir(dbdir)
     metadata.bind = 'sqlite:///%s' % dbfile
-    metadata.bind.echo = True
+    metadata.bind.echo = False
     setup_all()
     if not os.path.exists(dbfile):
         create_all()
