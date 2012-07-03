@@ -1,18 +1,18 @@
 from PyQt4.QtCore import * #@UnusedWildImport
 from PyQt4.QtGui import * #@UnusedWildImport
-from model.bo import Message, Newsgroup, NewsServer
+from model.bo import Message, Newsgroup, NewsServer, Preferences
 from ui.main import Ui_MainWindow
 from elixir import * #@UnusedWildImport
-import sys, os, logging
-from datetime import datetime
+import os
 from nntplib import * #@UnusedWildImport
 from ui.ui_widgets import * #@UnusedWildImport
 from ui import ui_widgets
+from model.nntp_stuff import CanillaNNTP
+from model.utils import CanillaUtils 
+from setup_db import *
 
 dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
 dbfile = os.path.join(dbdir, 'canilla.sqlite3')
-nntp_conn = None
-
 
 class MainWindow(QMainWindow):
     
@@ -22,6 +22,10 @@ class MainWindow(QMainWindow):
         self.mainwindow.setupUi(self)
         self.header_list = ['Subject', 'From', 'Date']
         self.ui_extra_setup()
+        self.canilla_utils = CanillaUtils()
+        self.current_newsserver = self.canilla_utils.get_default_server()
+        self.nntp = CanillaNNTP(self.current_newsserver)
+        self.canilla_utils.nntp = self.nntp
         self.load_groups()
         
         
@@ -49,6 +53,7 @@ class MainWindow(QMainWindow):
         tb.setLineWrapColumnOrWidth(76)
         tb.setLineWrapMode(QTextEdit.FixedColumnWidth)
         
+        
     def show_next_article(self):
         logging.debug('show_next_article')
         
@@ -58,42 +63,37 @@ class MainWindow(QMainWindow):
         tv_headers.model().clear()
         tv_headers.model().setHorizontalHeaderLabels(self.header_list)
     
-    
+
     def populate_threads(self, current):
         tv_headers = self.mainwindow.tv_headers
         self.clear_headers_table()
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
-        (reply, count, first, last, name) = nntp_conn.group(currentItem.newsgroup.name)
+        newsgroup = currentItem.newsgroup
+        last_stored = self.canilla_utils.get_last_stored_message(newsgroup)
+        # 1- retrieve new headers and store them
+        max_hdrs_to_rtrv = self.canilla_utils.get_max_headers()
+        self.canilla_utils.store_new_headers(
+            self.nntp.retrieve_new_headers(
+                newsgroup, last_stored, max_hdrs_to_rtrv))
+        # 2- then, retrieve the just-updated stored headers 
+        stored_headers = self.canilla_utils.retrieve_stored_messages(newsgroup)
         
-        (reply, subjects) = nntp_conn.xhdr('subject', str(int(last)-5) + '-' + last)
-        
-        for id, subject in subjects:
-            d = {}
-            try:
-                reply, num, tid, list = nntp_conn.head(id)
-            except NNTPTemporaryError:
-                continue
-                
-            for line in list:
-                for header in self.header_list:
-                    if line[:len(header)] == header:
-                        d[header] = line[len(header) + 2:]
-            
+        for mess in stored_headers:
             items = []
             it = QStandardItem()
-            it.id = id
-            it.setData(d['Subject'], Qt.DisplayRole)
+            it.id = mess.message_id
+            it.setData(mess.headers['Subject'], Qt.DisplayRole)
             it.setCheckable(False)
             items.append(it)
             
             it = QStandardItem()
-            it.id = id
-            it.setData(d['From'], Qt.DisplayRole)
+            it.id = mess.message_id
+            it.setData(mess.headers['From'], Qt.DisplayRole)
             items.append(it)
             
             it = QStandardItem()
-            it.id = id
-            it.setData(d['Date'], Qt.DisplayRole)
+            it.id = mess.message_id
+            it.setData(mess.headers['Date'], Qt.DisplayRole)
             items.append(it)
             
             tv_headers.model().appendRow(items)
@@ -123,8 +123,8 @@ class MainWindow(QMainWindow):
         tb_body.clear()
         tv_headers = self.mainwindow.tv_headers
         id = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).id
-        reply, num, tid, list = nntp_conn.body(id)
-        body = self.format_text(list)
+        body = self.nntp.retrieve_body(id)
+        body = self.format_text(body)
         tb_body.setText(body)
     
     def header_selection_changed(self, current, previous):
@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
         
 
     def load_groups(self):
-        groups = session.query(Newsgroup).filter_by(subscribed=True)
+        groups = self.canilla_utils.get_subscribed_groups(self.current_newsserver)
         tv = self.mainwindow.tv_groups
         
         for g in groups:
@@ -145,63 +145,27 @@ class MainWindow(QMainWindow):
             tv.model().appendRow(items)
         
         tv.selectionModel().select(tv.model().index(0, 0), QItemSelectionModel.Select)
-        #currentGroup = tv.model().itemFromIndex(tv.currentIndex()) 
-
-def init_db():
-    if not os.path.isdir(dbdir):
-        os.mkdir(dbdir)
-    metadata.bind = 'sqlite:///%s' % dbfile
-    metadata.bind.echo = True
-    setup_all()
-    if not os.path.exists(dbfile):
-        create_all()
-        session.query(Message).delete()
-        session.query(Newsgroup).delete()
-        session.query(NewsServer).delete()
         
-        defaultServer = NewsServer(name=u'Default', 
-            hostname='news.gmane.org')
-        newsgroupOne = Newsgroup(name=u'gmane.comp.python.general', 
-                       newsserver=defaultServer,
-                       subscribed=True) 
-        newsgroupTwo = Newsgroup(name=u'gmane.comp.python.django.user', 
-                       newsserver=defaultServer,
-                       subscribed=True) 
-        messageOne = Message(subject='Test 1',
-                             body='Body test 1',
-                             date_sent=datetime.now(),
-                             newsgroups=newsgroupOne)
-        messageTwo = Message(subject='Test 2',
-                             body='Body test 2',
-                             date_sent=datetime.now(),
-                             newsgroups=newsgroupOne)
-        messageThree = Message(subject='Test 3',
-                             body='Body test 3',
-                             date_sent=datetime.now(),
-                             newsgroups=newsgroupTwo)
-        messageFour = Message(subject='Test 4',
-                             body='Body test 4',
-                             date_sent=datetime.now(),
-                             newsgroups=newsgroupTwo)
-        session.commit()
+    def closeEvent(self, *args, **kwargs):
+        self.nntp.close_connection()
+        return QMainWindow.closeEvent(self, *args, **kwargs)
+    
+    def on_actionUpdateNewsgroups_triggered(self, checked=None):
+        if checked is None: return
+        logging.debug('updating newsgroups...')
+        self.canilla_utils.update_newsgroups()
 
 
 def init_app():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)-8s %(message)s',
                         datefmt='%d %b %Y %H:%M:%S')
-    global nntp_conn
-    nntp_conn = NNTP('news.gmane.org', 119)
 
 
 if __name__ == '__main__':
-    try:
-        init_db()
-        init_app()
-        app = QApplication(sys.argv)
-        frame = MainWindow()
-        frame.show()
-        app.exec_()
-    finally:
-        if nntp_conn:
-            nntp_conn.quit()
+    init_db()
+    init_app()
+    app = QApplication(sys.argv)
+    frame = MainWindow()
+    frame.show()
+    app.exec_()
