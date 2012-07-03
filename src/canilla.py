@@ -3,13 +3,12 @@ from PyQt4.QtGui import * #@UnusedWildImport
 from model.bo import Message, Newsgroup, NewsServer, Preferences
 from ui.main import Ui_MainWindow
 from elixir import * #@UnusedWildImport
-import os
 from nntplib import * #@UnusedWildImport
 from ui.ui_widgets import * #@UnusedWildImport
 from ui import ui_widgets
 from model.nntp_stuff import CanillaNNTP
 from model.utils import CanillaUtils 
-from setup_db import *
+from setup_db import * #@UnusedWildImport
 
 dbdir = os.path.join(os.path.expanduser('~'), '.canilla')
 dbfile = os.path.join(dbdir, 'canilla.sqlite3')
