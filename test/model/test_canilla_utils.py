@@ -64,3 +64,7 @@ class TestCanillaUtils(unittest.TestCase):
         self.assertIsNotNone(last_message)
         self.assertIsInstance(last_message, Message)
         logging.info('last message number: %d' % last_message.number)
+        
+    def test_retrieve_newsgroups(self):
+        logging.info('testing get_max_message_number')
+        ngs = self.cu.retrieve_newsgroups()

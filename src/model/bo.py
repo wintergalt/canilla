@@ -48,6 +48,7 @@ class Newsgroup(Entity):
     primary_key=True
     name = Field(Unicode(255))
     subscribed = Field(Boolean)
+    flag = Field(Unicode(1))
     messages = ManyToMany('Message')
     newsserver = ManyToOne('NewsServer')
     

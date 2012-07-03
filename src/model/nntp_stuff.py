@@ -8,6 +8,7 @@ class CanillaNNTP():
     def __init__(self, server, port=119):
         logging.fatal('server: %s' % server)
         logging.fatal('port: %d' % port)
+        self.server = server
         self.nntp_conn = NNTP(server.hostname, port)
         self.cu = CanillaUtils()
     
@@ -24,8 +25,6 @@ class CanillaNNTP():
         else:
             min_range = last_stored
         return str(min_range) + '-' + str(last)
-        
-        
         
     
     def retrieve_new_headers(self, newsgroup):
@@ -69,6 +68,16 @@ class CanillaNNTP():
         reply, num, tid, list = self.nntp_conn.body(message_id)
         logging.fatal('type of list: %s' % type(list))
         return list
+        
+    def retrieve_newsgroups(self):
+        response, list = self.nntp_conn.list()
+        logging.fatal('response: %s' % response)
+        for line in list:
+            group, hi, lo, flag = line
+            
+            now store this information in the db
+            
+            
         
     def close_connection(self):
         logging.fatal('closing connection')
