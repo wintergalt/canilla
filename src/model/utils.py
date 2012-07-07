@@ -65,6 +65,10 @@ class CanillaUtils():
         self.sql_session.add_all(groups_to_add)
         self.sql_session.commit()
         
+    def mark_message_read(self, message):
+        message.read = True
+        self.sql_session.commit()
+        
 class Timer(object):
     
     def __enter__(self):
