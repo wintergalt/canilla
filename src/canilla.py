@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         tv_groups.setIndentation(0)
         
         tv_headers = self.mainwindow.tv_headers
-        headers_model = QStandardItemModel()
+        headers_model = ThreadTreeModel()
         headers_model.setHorizontalHeaderLabels(self.header_list)
         tv_headers.setModel(headers_model)
         tv_headers.selectionModel().currentChanged.connect(self.header_selection_changed)
@@ -69,8 +69,10 @@ class MainWindow(QMainWindow):
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         newsgroup = currentItem.newsgroup
         last_stored = self.canilla_utils.get_last_stored_message(newsgroup)
+        logging.debug('got last stored for this group: %d' % last_stored.number)
         # 1- retrieve new headers and store them
         max_hdrs_to_rtrv = self.canilla_utils.get_max_headers()
+        logging.debug('got max_hdrs: %d' % max_hdrs_to_rtrv)
         self.canilla_utils.store_new_headers(
             self.nntp.retrieve_new_headers(
                 newsgroup, last_stored, max_hdrs_to_rtrv))
@@ -80,18 +82,18 @@ class MainWindow(QMainWindow):
         for mess in stored_headers:
             items = []
             it = QStandardItem()
-            it.id = mess.message_id
+            it.message = mess
             it.setData(mess.headers['Subject'], Qt.DisplayRole)
             it.setCheckable(False)
             items.append(it)
             
             it = QStandardItem()
-            it.id = mess.message_id
+            it.message = mess
             it.setData(mess.headers['From'], Qt.DisplayRole)
             items.append(it)
             
             it = QStandardItem()
-            it.id = mess.message_id
+            it.message = mess
             it.setData(mess.headers['Date'], Qt.DisplayRole)
             items.append(it)
             
@@ -121,10 +123,12 @@ class MainWindow(QMainWindow):
         tb_body = self.mainwindow.tb_body
         tb_body.clear()
         tv_headers = self.mainwindow.tv_headers
-        id = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).id
-        body = self.nntp.retrieve_body(id)
+        message = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).message
+        message_id = message.message_id
+        body = self.nntp.retrieve_body(message_id)
         body = self.format_text(body)
         tb_body.setText(body)
+        self.canilla_utils.mark_message_read(message)
     
     def header_selection_changed(self, current, previous):
         self.populate_body(current)
