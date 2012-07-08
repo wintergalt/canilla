@@ -53,9 +53,9 @@ class ThreadListModel(QAbstractListModel):
 class ThreadTreeModel(QStandardItemModel):
     
     def data(self, index, role=Qt.DisplayRole):
-        currentMessage = self.itemFromIndex(index).message
-        #logging.debug('---- inside data for message_id %s and read is %s, while role is %s' % (currentMessage.message_id, currentMessage.read, role))
-        if not currentMessage.read and role == Qt.FontRole:
+        current_article = self.itemFromIndex(index).article
+        #logging.debug('---- inside data for message_id %s and read is %s, while role is %s' % (current_article.message_id, current_article.read, role))
+        if not current_article.read and role == Qt.FontRole:
             font = QFont()
             font.setBold(True)
             return font

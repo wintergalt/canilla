@@ -1,6 +1,6 @@
 from PyQt4.QtCore import * #@UnusedWildImport
 from PyQt4.QtGui import * #@UnusedWildImport
-from model.bo import Message, Newsgroup, NewsServer, Preferences
+from model.bo import Article, Newsgroup, NewsServer, Preferences
 from ui.main import Ui_MainWindow
 from elixir import * #@UnusedWildImport
 from nntplib import * #@UnusedWildImport
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         self.clear_headers_table()
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         newsgroup = currentItem.newsgroup
-        last_stored = self.canilla_utils.get_last_stored_message(newsgroup)
+        last_stored = self.canilla_utils.get_last_stored_article(newsgroup)
         logging.debug('got last stored for this group: %d' % last_stored.number if last_stored else 0)
         # 1- retrieve new headers and store them
         max_hdrs_to_rtrv = self.canilla_utils.get_max_headers()
@@ -77,24 +77,24 @@ class MainWindow(QMainWindow):
             self.nntp.retrieve_new_headers(
                 newsgroup, last_stored, max_hdrs_to_rtrv))
         # 2- then, retrieve the just-updated stored headers 
-        stored_headers = self.canilla_utils.retrieve_stored_messages(newsgroup)
+        stored_headers = self.canilla_utils.retrieve_stored_articles(newsgroup)
         
-        for mess in stored_headers:
+        for art in stored_headers:
             items = []
             it = QStandardItem()
-            it.message = mess
-            it.setData(mess.headers['Subject'], Qt.DisplayRole)
+            it.article = art
+            it.setData(art.headers['Subject'], Qt.DisplayRole)
             it.setCheckable(False)
             items.append(it)
             
             it = QStandardItem()
-            it.message = mess
-            it.setData(mess.headers['From'], Qt.DisplayRole)
+            it.article = art
+            it.setData(art.headers['From'], Qt.DisplayRole)
             items.append(it)
             
             it = QStandardItem()
-            it.message = mess
-            it.setData(mess.headers['Date'], Qt.DisplayRole)
+            it.article = art
+            it.setData(art.headers['Date'], Qt.DisplayRole)
             items.append(it)
             
             tv_headers.model().appendRow(items)
@@ -123,12 +123,12 @@ class MainWindow(QMainWindow):
         tb_body = self.mainwindow.tb_body
         tb_body.clear()
         tv_headers = self.mainwindow.tv_headers
-        message = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).message
-        message_id = message.message_id
+        article = tv_headers.model().itemFromIndex(tv_headers.currentIndex()).article
+        message_id = article.message_id
         body = self.nntp.retrieve_body(message_id)
         body = self.format_text(body)
         tb_body.setText(body)
-        self.canilla_utils.mark_message_read(message)
+        self.canilla_utils.mark_article_read(article)
     
     def header_selection_changed(self, current, previous):
         self.populate_body(current)

@@ -14,7 +14,7 @@ class Header(Entity):
     primary_key=True
     header_name = Field(Unicode(500))
     header_value = Field(Unicode(500))
-    message = ManyToOne('Message')
+    article = ManyToOne('Article')
     
     #see http://docs.sqlalchemy.org/en/rel_0_7/orm/collections.html#custom-dictionary-based-collections
     
@@ -25,8 +25,8 @@ class Header(Entity):
     def __repr__(self):
         return '[', self.header_name, ':', self.header_value, ']'
 
-class Message(Entity):
-    using_options(tablename='messages')
+class Article(Entity):
+    using_options(tablename='articles')
     primary_key=True
     newsgroups = ManyToMany('Newsgroup')
     read = Field(Boolean)
@@ -36,7 +36,7 @@ class Message(Entity):
     headers = association_proxy('headersdict', 'header_value', creator=Header)
     
     def __init__(self, *args, **kwargs):
-        super(Message, self).__init__(*args, **kwargs)
+        super(Article, self).__init__(*args, **kwargs)
         # body is a transient attribute
         self.body = ''
     
@@ -49,7 +49,7 @@ class Newsgroup(Entity):
     name = Field(Unicode(255), unique=True)
     subscribed = Field(Boolean)
     flag = Field(Unicode(1))
-    messages = ManyToMany('Message')
+    articles = ManyToMany('Article')
     newsserver = ManyToOne('NewsServer')
     
     def abbreviated_name(self):
