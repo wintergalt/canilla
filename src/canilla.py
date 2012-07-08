@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         newsgroup = currentItem.newsgroup
         last_stored = self.canilla_utils.get_last_stored_message(newsgroup)
-        logging.debug('got last stored for this group: %d' % last_stored.number)
+        logging.debug('got last stored for this group: %d' % last_stored.number if last_stored else 0)
         # 1- retrieve new headers and store them
         max_hdrs_to_rtrv = self.canilla_utils.get_max_headers()
         logging.debug('got max_hdrs: %d' % max_hdrs_to_rtrv)
