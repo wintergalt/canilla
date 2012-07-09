@@ -22,7 +22,7 @@ class CanillaNNTP():
         if (last_in_server - last_stored) > max_headers:
             first = last_in_server - max_headers
         else:
-            first = last_stored
+            first = last_stored + 1
         return first
     
     def retrieve_new_headers(self, newsgroup, last_stored, max_headers):
