@@ -34,19 +34,16 @@ class CanillaUtils():
         return self.sql_session.query(Preferences.max_headers).first()[0]
     
     def store_new_headers(self, headers_list):
-        timer = Timer()
-        with timer:
-            for d in headers_list:
-                article_newsgroups = []
-                article = Article(message_id=d['Message-ID'], number=d['Number'], headers=d, read=False)
-                ns_list = d['Newsgroups'].split(',')
-                for ns in ns_list:
-                    stored_newsgroup = self.sql_session.query(Newsgroup).filter_by(name=ns).first()
-                    if stored_newsgroup:
-                        article_newsgroups.append(stored_newsgroup)
-                article.newsgroups = article_newsgroups
-            self.sql_session.commit()
-        logging.fatal('duration of store_new_headers: %d' % timer.duration_in_seconds())
+        for d in headers_list:
+            article_newsgroups = []
+            article = Article(message_id=d['Message-ID'], number=d['Number'], headers=d, read=False)
+            ns_list = d['Newsgroups'].split(',')
+            for ns in ns_list:
+                stored_newsgroup = self.sql_session.query(Newsgroup).filter_by(name=ns).first()
+                if stored_newsgroup:
+                    article_newsgroups.append(stored_newsgroup)
+            article.newsgroups = article_newsgroups
+        self.sql_session.commit()
         
     def get_stored_newsgroups(self, ns):
         if not ns:

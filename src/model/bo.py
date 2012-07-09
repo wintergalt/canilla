@@ -12,8 +12,8 @@ metadata.bind.echo = False
 class Header(Entity):
     using_options(tablename='headers')
     primary_key=True
-    header_name = Field(Unicode(500))
-    header_value = Field(Unicode(500))
+    header_name = Field(String(500))
+    header_value = Field(String(500))
     article = ManyToOne('Article')
     
     #see http://docs.sqlalchemy.org/en/rel_0_7/orm/collections.html#custom-dictionary-based-collections
@@ -30,7 +30,7 @@ class Article(Entity):
     primary_key=True
     newsgroups = ManyToMany('Newsgroup')
     read = Field(Boolean)
-    message_id = Field(Unicode(255))
+    message_id = Field(String(255))
     number = Field(Integer)
     headersdict = OneToMany('Header', collection_class=attribute_mapped_collection('header_name'))
     headers = association_proxy('headersdict', 'header_value', creator=Header)
@@ -46,9 +46,9 @@ class Article(Entity):
 class Newsgroup(Entity):
     using_options(tablename='newsgroups')
     primary_key=True
-    name = Field(Unicode(255), unique=True)
+    name = Field(String(255), unique=True)
     subscribed = Field(Boolean)
-    flag = Field(Unicode(1))
+    flag = Field(String(1))
     articles = ManyToMany('Article')
     newsserver = ManyToOne('NewsServer')
     
@@ -62,8 +62,8 @@ class Newsgroup(Entity):
 class NewsServer(Entity):
     using_options(tablename='newsservers')
     primary_key=True
-    name = Field(Unicode(255), unique=True)
-    hostname = Field(Unicode(255), unique=True)
+    name = Field(String(255), unique=True)
+    hostname = Field(String(255), unique=True)
     port = Field(Integer, default=119)
     newsgroups = OneToMany('Newsgroup')
     prefs = ManyToOne('Preferences')

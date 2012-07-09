@@ -68,14 +68,13 @@ class MainWindow(QMainWindow):
         self.clear_headers_table()
         currentItem = self.mainwindow.tv_groups.model().itemFromIndex(self.mainwindow.tv_groups.currentIndex())
         newsgroup = currentItem.newsgroup
-        last_stored = self.canilla_utils.get_last_stored_article(newsgroup)
-        logging.debug('got last stored for this group: %d' % last_stored.number if last_stored else 0)
+        last_stored_article = self.canilla_utils.get_last_stored_article(newsgroup)
+        last_stored_article_number = last_stored_article.number if last_stored_article else 0
         # 1- retrieve new headers and store them
         max_hdrs_to_rtrv = self.canilla_utils.get_max_headers()
-        logging.debug('got max_hdrs: %d' % max_hdrs_to_rtrv)
         self.canilla_utils.store_new_headers(
             self.nntp.retrieve_new_headers(
-                newsgroup, last_stored, max_hdrs_to_rtrv))
+                newsgroup, last_stored_article_number, max_hdrs_to_rtrv))
         # 2- then, retrieve the just-updated stored headers 
         stored_headers = self.canilla_utils.retrieve_stored_articles(newsgroup)
         
@@ -136,6 +135,7 @@ class MainWindow(QMainWindow):
 
     def load_groups(self):
         groups = self.canilla_utils.get_subscribed_groups(self.current_newsserver)
+        logging.fatal('number of groups: %d' % len(groups))
         tv = self.mainwindow.tv_groups
         
         for g in groups:
