@@ -130,6 +130,7 @@ class MainWindow(QMainWindow):
         self.canilla_utils.mark_article_read(article)
     
     def header_selection_changed(self, current, previous):
+        logging.fatal('type of current: %s' % type(current))
         self.populate_body(current)
         
 
