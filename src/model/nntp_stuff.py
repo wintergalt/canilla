@@ -17,53 +17,34 @@ class CanillaNNTP():
         logging.fatal('updating newsgroups')
         pass
     
-    def calculate_range(self, last_stored, last, max_headers_to_retrieve):
-        if last_stored == last:
-            return None
-        if (last - last_stored) > max_headers_to_retrieve:
-            min_range = last - max_headers_to_retrieve
+    
+    def calculate_first_to_retrieve(self, last_stored, last_in_server, max_headers):
+        if (last_in_server - last_stored) > max_headers:
+            first = last_in_server - max_headers
         else:
-            min_range = last_stored
-        return str(min_range) + '-' + str(last)
-        
+            first = last_stored
+        return first
     
     def retrieve_new_headers(self, newsgroup, last_stored, max_headers):
-        timer = Timer()
-        with timer:
-            (reply, count, first, last, name) = self.nntp_conn.group(newsgroup.name)
-            range = self.calculate_range(last_stored.number if last_stored else 0, int(last), max_headers)
-            
-            if not range:
-                return []
-            
-            (reply, subjects) = self.nntp_conn.xhdr('subject', range)
-            headers_list = []
-            for id, subject in subjects:
-                d = {}
-                try:
-                    reply, num, tid, list = self.nntp_conn.head(id)
-                    d['Number'] = num
-                except NNTPTemporaryError:
-                    continue
-                    
-                header_name = ''
-                header_value = ''
-                
-                for line in list:
-                    if line[0] in string.whitespace:
-                        # append new line to previous line
-                        d[header_name] = d[header_name] + '\n' + line
-                        continue
-                    idx = line.index(':')
-                    header_name = line[:idx]
-                    header_value = line[idx + 2:]
-                    d[header_name] = header_value
-                            
-                headers_list.append(d)
+        (reply, count, first, last, name) = self.nntp_conn.group(newsgroup.name)
         
-        logging.fatal('duration of retrieve_new_headers: %d' % timer.duration_in_seconds())
+        headers_list = []
+        first_to_retrieve = self.calculate_first_to_retrieve(last_stored, int(last), max_headers)
+        (resp, list) = self.nntp_conn.xover(str(first_to_retrieve), last)
+        for (article_number, subject, poster, date, id, references, size, lines) in list:
+            d = {}
+            d['Number'] = article_number
+            d['Subject'] = subject
+            d['From'] = poster
+            d['Date'] = date
+            d['Message-ID'] = id
+            d['References'] = ' '.join(references)
+            d['Lines'] = lines
+            d['Newsgroups'] = newsgroup.name
+            headers_list.append(d)
         
         return headers_list
+
     
     def retrieve_body(self, message_id):
         reply, num, tid, list = self.nntp_conn.body(message_id)
