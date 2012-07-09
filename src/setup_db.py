@@ -14,7 +14,7 @@ def init_db():
     setup_all()
     if not os.path.exists(dbfile):
         create_all()
-        session.query(Message).delete()
+        session.query(Article).delete()
         session.query(Newsgroup).delete()
         session.query(NewsServer).delete()
         session.query(Preferences).delete()
@@ -30,25 +30,25 @@ def init_db():
                        newsserver=defaultServer,
                        subscribed=True) 
         
-        messageOne = Message(read=False,
-                             message_id='messageOne',
+        articleOne = Article(read=False,
+                             message_id='articleOne',
                              number=1,
-                             headers = {'Subject':'Message One', 'From':'diego1@python.org', 'Date':'Mon, 2 Jul 2012 08:28:24 -0700 (PDT)'},
+                             headers = {'Subject':'Article One', 'From':'diego1@python.org', 'Date':'Mon, 2 Jul 2012 08:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupOne])
-        messageTwo = Message(read=False,
-                             message_id='messageTwo',
+        articleTwo = Article(read=False,
+                             message_id='articleTwo',
                              number=2,
-                             headers = {'Subject':'Message Two', 'From':'diego2@python.org', 'Date':'Mon, 2 Jul 2012 09:28:24 -0700 (PDT)'},
+                             headers = {'Subject':'Article Two', 'From':'diego2@python.org', 'Date':'Mon, 2 Jul 2012 09:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupOne])
-        messageOne = Message(read=False,
-                             message_id='messageThree',
+        articleOne = Article(read=False,
+                             message_id='articleThree',
                              number=3,
-                             headers = {'Subject':'Message Three', 'From':'diego3@python.org', 'Date':'Mon, 2 Jul 2012 10:28:24 -0700 (PDT)'},
+                             headers = {'Subject':'Article Three', 'From':'diego3@python.org', 'Date':'Mon, 2 Jul 2012 10:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupTwo])
-        messageOne = Message(read=False,
-                             message_id='messageFour',
+        articleFour = Article(read=False,
+                             message_id='articleFour',
                              number=4,
-                             headers = {'Subject':'Message Four', 'From':'diego4@python.org', 'Date':'Mon, 2 Jul 2012 11:28:24 -0700 (PDT)'},
+                             headers = {'Subject':'Article Four', 'From':'diego4@python.org', 'Date':'Mon, 2 Jul 2012 11:28:24 -0700 (PDT)'},
                              newsgroups=[newsgroupTwo])
         '''
         prefs = Preferences(default_server=defaultServer, max_headers=500)
