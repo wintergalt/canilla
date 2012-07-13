@@ -76,27 +76,10 @@ class MainWindow(QMainWindow):
             self.nntp.retrieve_new_headers(
                 newsgroup, last_stored_article_number, max_hdrs_to_rtrv))
         # 2- then, retrieve the just-updated stored headers 
-        stored_headers = self.canilla_utils.retrieve_stored_articles(newsgroup)
+        tv_headers.model().insert_rows(
+            self.canilla_utils.retrieve_stored_articles(newsgroup))
         
-        for art in stored_headers:
-            items = []
-            it = QStandardItem()
-            it.article = art
-            it.setData(art.headers['Subject'], Qt.DisplayRole)
-            it.setCheckable(False)
-            items.append(it)
-            
-            it = QStandardItem()
-            it.article = art
-            it.setData(art.headers['From'], Qt.DisplayRole)
-            items.append(it)
-            
-            it = QStandardItem()
-            it.article = art
-            it.setData(art.headers['Date'], Qt.DisplayRole)
-            items.append(it)
-            
-            tv_headers.model().appendRow(items)
+        
     
     
     def group_selection_changed(self, current, previous):

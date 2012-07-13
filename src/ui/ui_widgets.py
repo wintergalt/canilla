@@ -52,9 +52,62 @@ class ThreadListModel(QAbstractListModel):
     
 class ThreadTreeModel(QStandardItemModel):
     
+    def find_row_by_message_id(self, message_id):
+        no_of_rows = self.rowCount()
+        for row in range(no_of_rows):
+            it = self.item(row)
+            art = it.article
+            if art.message_id == message_id:
+                return row
+        return -1
+        
+    def insert_rows(self, stored_articles):
+        for art in stored_articles:
+            items = []
+            it = QStandardItem()
+            it.article = art
+            it.setData(art.headers['Subject'], Qt.DisplayRole)
+            it.setCheckable(False)
+            items.append(it)
+            
+            it = QStandardItem()
+            it.article = art
+            it.setData(art.headers['From'], Qt.DisplayRole)
+            items.append(it)
+            
+            it = QStandardItem()
+            it.article = art
+            it.setData(art.headers['Date'], Qt.DisplayRole)
+            items.append(it)
+            
+            if art.headers['References']:
+                last_ref = self.get_last_ref(art.headers['References'])
+                parent_row = self.find_row_by_message_id(last_ref)
+            
+            if parent_row >= 0:
+                logging.debug('setting child...')
+                self.item(parent_row).setChild(self.item(parent_row).rowCount(), items[0])
+                self.item(parent_row).setChild(self.item(parent_row).rowCount(), items[1])
+                self.item(parent_row).setChild(self.item(parent_row).rowCount(), items[2])
+            else:
+                self.appendRow(items)
+            
+            
+            
+        
+    def get_last_ref(self, refs):
+        if not refs:
+            last_ref = None
+        else:
+            last_ref = refs.split(' ')[-1]
+        return last_ref
+            
+    
+    def insert_root_row(self):
+        pass
+    
     def data(self, index, role=Qt.DisplayRole):
         current_article = self.itemFromIndex(index).article
-        #logging.debug('---- inside data for message_id %s and read is %s, while role is %s' % (current_article.message_id, current_article.read, role))
         if not current_article.read and role == Qt.FontRole:
             font = QFont()
             font.setBold(True)
